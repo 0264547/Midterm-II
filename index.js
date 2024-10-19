@@ -11,7 +11,6 @@ var characterList;
 var contador = 0;
 let page = 0; 
 
-//lista de familias para el display por familias
 var families = {
     'House Targaryen': 'Targaryen',
     'Targaryan': 'Targaryen',
@@ -56,7 +55,6 @@ app.listen(3000, () => {
 
 
 app.get('/', (req, res) => {
-    // Obtener un solo personaje
     var singleCharacterUrl = `https://thronesapi.com/api/v2/Characters/${contador}`;
     https.get(singleCharacterUrl, (response) => {
         var singleContent = "";
@@ -92,7 +90,6 @@ app.get('/', (req, res) => {
                         familyCrest: 'URL_OF_FAMILY_CREST' 
                     };
 
-                    // Obtener múltiples personajes
                     const thronesApiUrl = 'https://thronesapi.com/api/v2/Characters';
 
                     https.get(thronesApiUrl, (response) => {
@@ -176,7 +173,6 @@ app.get('/search', (req, res) => {
                 return res.render("error", { message: 'No se encontraron personajes.' });
             }
 
-            // Buscar personaje en la API de Thrones por nombre
             const foundCharacter = characterData.find(character =>
                 character.firstName.toLowerCase() === name.toLowerCase() ||
                 character.lastName.toLowerCase() === name.toLowerCase() ||
@@ -187,7 +183,6 @@ app.get('/search', (req, res) => {
                 return res.render("error", { message: 'Personaje no encontrado.' });
             }
 
-            // Detalles del personaje en la API de Thrones
             const characterId = foundCharacter.id;
             const characterUrl = `https://thronesapi.com/api/v2/Characters/${characterId}`;
 
@@ -199,7 +194,6 @@ app.get('/search', (req, res) => {
                 }).on("end", () => {
                     const characterDetail = JSON.parse(characterDetailContent);
 
-                    // Ahora buscar en la API de Ice and Fire (opcional)
                     const iceAndFireUrl = `https://anapioficeandfire.com/api/characters?name=${encodeURIComponent(characterDetail.fullName)}`;
 
                     https.get(iceAndFireUrl, (response) => {
@@ -227,17 +221,15 @@ app.get('/search', (req, res) => {
                                 fullName: characterDetail.fullName,
                                 title: characterDetail.title,
                                 family: characterDetail.family,
-                                born: characterFound.born || 'Unknown',  // Si no existe, "Unknown"
-                                died: characterFound.died || 'Unknown',  // Si no existe, "Unknown"
-                                aliases: characterFound.aliases || [],  // Si no existe, vacío
-                                familyCrest: 'URL_OF_FAMILY_CREST' // Puede ser un campo por defecto si no lo tienes
+                                born: characterFound.born || 'Unknown',  
+                                died: characterFound.died || 'Unknown',  
+                                aliases: characterFound.aliases || [],  
+                                familyCrest: 'URL_OF_FAMILY_CREST' 
                             };
 
-                            // Renderizar la página con los datos del personaje fusionados
                             res.render("personaje", { characterData: mergedCharacter });
                         }).on("error", (e) => {
                             console.error("Error en la API de Ice and Fire:", e);
-                            // En caso de error, solo mostrar los datos de la API de Thrones
                             const mergedCharacter = {
                                 imageUrl: characterDetail.imageUrl,
                                 id: characterDetail.id,
